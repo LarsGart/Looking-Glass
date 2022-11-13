@@ -1,0 +1,8 @@
+{
+    "Modules": ["MMM-GroveGestures", 
+                "MMM-ethereum",
+                "MMM-Jast",
+                "MMM-MTA-NextBus",
+                "MMM-Facial-Recognition"
+                ]
+}

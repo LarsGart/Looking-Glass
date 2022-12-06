@@ -27,8 +27,8 @@ awsport = 8883                                              # Port no.
 clientId = "MirrorPi_Client"                                     # Thing_Name
 thingName = "MirrorPi_Client"                                    # Thing_Name
 caPath = "/glass/AWS/AmazonRootCA1.pem"                                      # Root_CA_Certificate_Name
-certPath = "/glass/AWS/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-certificate.pem.crt"                            # <Thing_Name>.cert.pem
-keyPath = "/glass/AWS/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-private.pem.key"                          # <Thing_Name>.private.key
+certPath = "/glass/AWS/certificate.pem.crt"                            # <Thing_Name>.cert.pem
+keyPath = "/glass/AWS/private.pem.key"                          # <Thing_Name>.private.key                        # <Thing_Name>.private.key
  
 mqttc.tls_set(caPath, certfile=certPath, keyfile=keyPath, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)      
  

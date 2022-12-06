@@ -6,6 +6,7 @@ import ssl
 import random
 import string
 import json
+import csv
 from time import sleep
 from random import uniform
  
@@ -13,7 +14,7 @@ connflag = False
  
 def on_connect(client, userdata, flags, rc):                # func for making connection
     global connflag
-    print "Connected to AWS"
+    print("Connected to AWS")
     connflag = True
     print("Connection returned result: " + str(rc) )
  
@@ -56,30 +57,69 @@ awshost = "a1bnsge87diswb-ats.iot.us-east-1.amazonaws.com"      # Endpoint
 awsport = 8883                                              # Port no.   
 clientId = "MirrorPi_Client"                                     # Thing_Name
 thingName = "MirrorPi_Client"                                    # Thing_Name
-caPath = "/glass/AWS/AmazonRootCA1.pem"                                      # Root_CA_Certificate_Name
-certPath = "/glass/AWS/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-certificate.pem.crt"                            # <Thing_Name>.cert.pem
-keyPath = "/glass/AWS/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-private.pem.key"                          # <Thing_Name>.private.key
+caPath = "/home/pi/Downloads/AmazonRootCA1.pem"                                      # Root_CA_Certificate_Name
+certPath = "/home/pi/Downloads/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-certificate.pem.crt"                            # <Thing_Name>.cert.pem
+keyPath = "/home/pi/Downloads/ad60352397db4239e9bb83c6e4c04e6ff3de510c6f1b94f4261461d424fd6e7d-private.pem.key"                          # <Thing_Name>.private.key
  
 mqttc.tls_set(caPath, certfile=certPath, keyfile=keyPath, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)  # pass parameters
  
 mqttc.connect(awshost, awsport, keepalive=60)               # connect to aws server
  
 mqttc.loop_start()                                          # Start the loop
+
+
+def cleaner(line):
+  danielDetect, ivanDetect, larsDetect, unknownDetect = False, False, False, False
+  if 'daniel' in line:
+    danielDetect = True
+  if 'ivan' in line:
+    ivanDetect = True
+  if 'lars' in line:
+    larsDetect = True
+  if 'unknown' in line:
+    unknownDetect = True
+
+  print('danielDetect', danielDetect, 'ivanDetect', ivanDetect, 'larsDetect', larsDetect, 'unknownDetect', unknownDetect)
+
+  parsedString = ''
+
+  if danielDetect:
+    parsedString += 'daniel'
+  if ivanDetect:
+    parsedString += '-ivan'
+  if larsDetect:
+    parsedString += '-lars'
+  if unknownDetect:
+    parsedString += '-unknown'
+
+  # remove the first hyphen
+  parsedString = parsedString[1:]
+
+  return parsedString
  
 while True:
-    sleep(5)
+    sleep(1)
     if connflag == True:
+        user = ""
+        timestamp = ""
         ethName=getEthName()
         ethMAC=getMAC(ethName)
         macIdStr = ethMAC
-        randomNumber = uniform(20.0,25.0)
-        random_string= get_random_string(8)
+
+        with open("/home/glass/logger.csv", 'r+') as file:
+          csvreader = csv.reader(file)
+          first_line = next(csvreader)
+
+          file.seek(0)
+          file.truncate()
+
+        parsedString = cleaner(first_line)
+
         paylodmsg0="{"
         paylodmsg1 = "\"mac_Id\": \""
-        paylodmsg2 = "\", \"random_number\":"
-        paylodmsg3 = ", \"random_string\": \""
+        paylodmsg2 = "\", \"user\":"
         paylodmsg4="\"}"
-        paylodmsg = "{} {} {} {} {} {} {} {}".format(paylodmsg0, paylodmsg1, macIdStr, paylodmsg2, randomNumber, paylodmsg3, random_string, paylodmsg4)
+        paylodmsg = "{} {} {} {} {} {}".format(paylodmsg0, paylodmsg1, macIdStr, paylodmsg2, parsedString, paylodmsg4)
         paylodmsg = json.dumps(paylodmsg) 
         paylodmsg_json = json.loads(paylodmsg)       
         mqttc.publish("MirrorPi", paylodmsg_json , qos=1)        # topic: temperature # Publishing Temperature values

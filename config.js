@@ -44,7 +44,7 @@ let config = {
             config: {
                 autoStart: true, //When Mirror starts, recognition will start.
                 verbose: false, // If set as `true`, useful messages will be logged.
-                recognitionTimeout: 1000, //Gesture sequence will be ended after this time from last recognized gesture.
+                recognitionTimeout: 250, //Gesture sequence will be ended after this time from last recognized gesture.
                 //cancelGesture: "WAVE", //If set, You can cancel gesture sequence with this gesture.
                 visible: true, //Recognized gesture sequence will be displayed on position
 
@@ -91,36 +91,16 @@ let config = {
                 defaultCommandSet: "default",
                 commandSet: {
                     "default": {
-                        "FORWARD-BACKWARD": {
+                        "UP": {
                             notificationExec: {
-                                notification: "ASSISTANT_ACTIVATE",
-                                payload: null
-                            }
-                        },
-                        "LEFT-RIGHT": {
-                            notificationExec: {
-                                notification: "ASSISTANT_CLEAR",
+                                notification: "PAGE_INCREMENT",
                                 payload: null,
                             }
                         },
-                        "CLOCKWISE": {
-                            moduleExec: {
-                                module: [],
-                                exec: (module, gestures) => {
-                                    module.hide(1000, null, {
-                                        lockstring: "GESTURE"
-                                    })
-                                }
-                            }
-                        },
-                        "ANTICLOCKWISE": {
-                            moduleExec: {
-                                module: [],
-                                exec: (module, gestures) => {
-                                    module.show(1000, null, {
-                                        lockstring: "GESTURE"
-                                    })
-                                }
+                        "DOWN": {
+                            notificationExec: {
+                                notification: "PAGE_DECREMENT",
+                                payload: null,
                             }
                         },
                         "LEFT": {
@@ -139,7 +119,7 @@ let config = {
                 },
             },
            
-            classes: 'lars'
+            classes: 'always'
         },
         {
             module: 'MMM-Face-Reco-DNN',
@@ -203,6 +183,26 @@ let config = {
             }
         },
         {
+            module: 'MMM-pages',
+            config: {
+                    modules:
+                        [[ "calendar", "weather", "MMM-jokes", "MMM-MTA-NextBus" ],
+                         [ "MMM-SystemStats",  "MMM-NetworkConnection"]],
+                    fixed: [ "clock", "MMM-page-indicator" ],
+            },
+            
+            classes: 'ivan'
+        },
+        {
+            module: 'MMM-page-indicator',
+            position: 'bottom_bar',
+            config: {
+                pages: 2,
+            },
+
+            classes: 'ivan'
+        },
+        {
             module: "alert",
            
             classes: 'everyone'
@@ -238,6 +238,8 @@ let config = {
             config: {
                 weatherProvider: "openweathermap",
                 type: "current",
+                units: 'imperial',
+                tempUnits: 'imperial',
                 location: "New York",
                 locationID: "5128581", //ID from http://bulk.openweathermap.org/sample/city.list.json.gz; unzip the gz file and find your city
                 apiKey: "23ecee5a8c9ab24a8fb4d674493bf892"
@@ -252,6 +254,8 @@ let config = {
             config: {
                 weatherProvider: "openweathermap",
                 type: "forecast",
+                units: 'imperial',
+                tempUnits: 'imperial',
                 location: "New York",
                 locationID: "5128581", //ID from http://bulk.openweathermap.org/sample/city.list.json.gz; unzip the gz file and find your city
                 apiKey: "23ecee5a8c9ab24a8fb4d674493bf892"
